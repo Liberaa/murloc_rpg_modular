@@ -7,7 +7,7 @@
 export const scenes = [
   /* 0 – Beginner Meadow -------------------------------- */
 {
-  bg: '#6bbf59',                    // bright green
+  bg: 'assets/bg.png',                    // bright green
   enemies: [
     { x: 200, level: 1, hp: 40, atk: 6, xp: 25, sprite: 'crab.png' }
   ],
@@ -20,7 +20,7 @@ export const scenes = [
 
   /* 1 – Whispering Woods ------------------------------- */
   {
-    bg: '#4e944f',
+     bg: 'assets/bg.png', 
     enemies: [
       { x: 150, level: 2, hp:  55, atk:  8, xp:  35, sprite: 'crab.png' },
       { x: 330, level: 3, hp:  70, atk: 10, xp:  45, sprite: 'goblin.png' }
@@ -29,7 +29,7 @@ export const scenes = [
 
   /* 2 – Murky Swamp ------------------------------------ */
   {
-    bg: '#3d6f46',
+    bg: 'assets/bg.png', 
     enemies: [
       { x: 120, level: 4, hp:  95, atk: 12, xp:  60, sprite: 'goblin.png' },
       { x: 370, level: 5, hp: 110, atk: 14, xp:  75, sprite: 'goblin.png' }
@@ -38,7 +38,7 @@ export const scenes = [
 
   /* 3 – Broken Bridge ---------------------------------- */
   {
-    bg: '#5c4c3b',
+     bg: 'assets/bg.png', 
     enemies: [
       { x: 260, level: 6, hp: 135, atk: 17, xp:  95, sprite: 'orc.png' }
     ]

@@ -331,8 +331,15 @@ function adjustAtEdges () {
 /* ---------- drawing ---------- */
 function drawExplore () {
   const scn = scenes[sceneIndex];
+ if (scn.bg.endsWith('.png')) {
+  const bgImg = new Image();
+  bgImg.src = scn.bg;
+  bgImg.onload = () => ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+} else {
   ctx.fillStyle = scn.bg;
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
   ctx.fillStyle = '#654321';
   ctx.fillRect(0,canvas.height-4,canvas.width,4);
 
