@@ -11,6 +11,7 @@ import { Battle }         from './mechanics/battlescenes.js';
 import { push, last }     from './mechanics/logs.js';
 import { talentList }     from './mechanics/talent.js';
 import { shopStock }      from './mechanics/shop.js';       // ← NEW
+import { gearStock } from './mechanics/gearShop.js';
 
 /* ---------- canvas ---------- */
 const canvas = document.getElementById('gameCanvas');
@@ -35,11 +36,10 @@ let enemies = [];
 let npcs    = [];                                           // ← NEW
 let sceneIndex = 0;
 let mode = 'explore';               // 'explore' | 'battle'
-let battle = null;
-let shopMessage = '';          // feedback text for the shop
+let battle = null;         // feedback text for the shop
 let showTalents = false;
 let showShop    = false;            // ← NEW
-
+let showGear = false;
 /* ---------- HUD ---------- */
 function drawProfile () {
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -132,10 +132,38 @@ function drawShop () {
   ctx.textAlign='start';
 }
 
+function drawGear () {
+  ctx.fillStyle = 'rgba(0,0,0,0.85)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.font = '24px sans-serif';
+  ctx.fillText('Gear Shop', canvas.width/2, 70);
+  ctx.font = '16px sans-serif';
+  ctx.fillText(`Gold: ${player.gold}`, canvas.width/2, 96);
+
+  ctx.textAlign = 'start';
+  ctx.font = '15px sans-serif';
+  gearStock.forEach((it,i)=>{
+    const y = 120 + i*26;
+    ctx.fillStyle = player.gold>=it.price ? '#fff' : '#777';
+    ctx.fillText(`${it.name} (${it.price || 80}g)`, canvas.width/2-110, y);
+  });
+
+  ctx.textAlign='center';
+  ctx.font='14px sans-serif';
+  ctx.fillStyle='#aaa';
+  ctx.fillText('Click to buy – press E to close',
+               canvas.width/2, canvas.height-32);
+  ctx.textAlign='start';
+}
+
+
 /* ---------- bootstrap ---------- */
 function startGame () {
   player = new Player(50, canvas.height - 32, ctx, sprite['murloc.png']);
-  inventoryUI = new InventoryUI(new Backpack(5));
+inventoryUI = new InventoryUI(new Backpack(5), player);
   inventoryUI.render();
 
   loadScene(0);
@@ -164,11 +192,14 @@ function loadScene (idx) {
 function onKey (e) {
   if (e.key === 't' && mode === 'explore') { showTalents = !showTalents; return; }
 
-  if (e.key === 'e' && mode === 'explore') {          // shop toggle
-    const near = npcs.find(n => n.type === 'shop' && Math.abs(player.x - n.x) < 24);
-    if (near) { showShop = !showShop; shopMessage = ''; }
-    return;
-  }
+ if (e.key === 'e' && mode === 'explore') {
+  const nearShop = npcs.find(n => n.type === 'shop' && Math.abs(player.x - n.x) < 24);
+  const nearGear = npcs.find(n => n.type === 'gear' && Math.abs(player.x - n.x) < 24);
+  if (nearShop) { showShop = !showShop; showGear = false; shopMessage = ''; }
+  else if (nearGear) { showGear = !showGear; showShop = false; }
+  return;
+}
+
 
   if (showTalents || showShop) return;                // block movement in menus
 
@@ -194,6 +225,25 @@ function onClick (evt) {
   const rect = canvas.getBoundingClientRect();
   const x = evt.clientX - rect.left;
   const y = evt.clientY - rect.top;
+
+if (showGear) {
+  const startY = 120, rowH = 26, idx = Math.floor((y - startY) / rowH);
+  if (idx >= 0 && idx < gearStock.length) {
+    const item = gearStock[idx];
+    const cost = item.price || 80;
+    if (player.gold >= cost) {
+      player.gold -= cost;
+      player.equip(item);
+inventoryUI.backpack.add(item);  // ← add to inventory
+inventoryUI.render();
+      push(`Equipped ${item.name}!`);
+    } else {
+      push('Not enough gold!');
+    }
+  }
+  return;
+}
+
 
   /* ---------- 1. Shop overlay clicks ---------- */
   if (showShop) {
@@ -295,11 +345,13 @@ function drawExplore () {
   adjustAtEdges();          // ← add this line
 
   /* shop prompt */
-  const shop = npcs.find(n=>n.type==='shop' && Math.abs(player.x-n.x)<24);
-  if (shop) {
-    ctx.fillStyle='#fff'; ctx.font='14px sans-serif';
-    ctx.fillText('Press E to trade', shop.x-30, player.groundY-40);
-  }
+ const nearNpc = npcs.find(n => (n.type==='shop'||n.type==='gear') && Math.abs(player.x-n.x)<24);
+if (nearNpc) {
+  ctx.fillStyle='#fff'; ctx.font='14px sans-serif';
+  const label = nearNpc.type === 'shop' ? 'trade' : 'buy gear';
+  ctx.fillText(`Press E to ${label}`, nearNpc.x-30, player.groundY-40);
+}
+
 
   /* enemy collision */
   const hit = checkCollision(player,enemies);
@@ -365,9 +417,10 @@ function drawBattle () {
   });
 
   /* 6. Latest combat log */
-  ctx.fillStyle = '#fffa';
-  ctx.font = '16px sans-serif';
-  ctx.fillText(last(), 170, canvas.height - 20);
+const entry = last();
+ctx.fillStyle = entry.color || '#fff';
+ctx.font = entry.bold ? 'bold 16px sans-serif' : '16px sans-serif';
+ctx.fillText(entry.msg, 170, canvas.height - 20);
 
   /* 7. End‑of‑battle banner */
   if (battle.finished) {
@@ -423,9 +476,12 @@ function loop () {
     drawTalents();
   } else if (showShop) {
     drawShop();
-  } else if (mode === 'explore') {
-    drawExplore();
-  } else {
+ } else if (showGear) {
+  drawGear();
+} else if (mode === 'explore') {
+  drawExplore();
+}
+ else {
     drawBattle();
   }
 

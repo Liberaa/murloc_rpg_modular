@@ -14,10 +14,10 @@ export class Player {
     this.height = 32;
 
     /* ---------- base stats ---------- */
-    this.maxHp      = 100;
+    this.maxHp      = 105;
     this.hp         = this.maxHp;
     this.attack     = 10;
-    this.gold = 100;
+    this.gold = 10;
     this.regenRate  = 5;    // %‑based regen (HP / sec)
     this.regenFlat  = 0;    // flat HP / sec from talents
     this.moveSpeed  = 5;    // px / keypress
@@ -28,7 +28,10 @@ export class Player {
     /* ---------- progression ---------- */
     this.xp           = new XPManager();
     this.talentPoints = 0;
-    this.talentsTaken = new Map();    // id → rank
+    this.talentsTaken = new Map();   // id → rank
+    this.equipment = {}; // slot → item
+    this.gearBonus = {};
+
   }
 
   /* ---------- leveling ---------- */
@@ -65,6 +68,27 @@ export class Player {
     this.talentsTaken.set(id, currentRank + 1);
     return true;
   }
+
+equip(item) {
+  this.equipped = this.equipped || {};
+  this.equipped[item.slot] = item;
+}
+
+
+recalculateGearBonus() {
+  const all = Object.values(this.equipment);
+  const bonus = { attack: 0, maxHp: 0, regenFlat: 0, moveSpeed: 0 };
+  all.forEach(item => {
+    for (const key in item.bonus) bonus[key] += item.bonus[key];
+  });
+
+  this.attack = 100 + (bonus.attack || 0);
+  this.maxHp = 100 + (bonus.maxHp || 0);
+  this.regenFlat = bonus.regenFlat || 0;
+  this.moveSpeed = 5 + (bonus.moveSpeed || 0);
+  this.gearBonus = bonus;
+}
+
 
     /* ---------- earn gold ---------- */
   gainGold (amount) {

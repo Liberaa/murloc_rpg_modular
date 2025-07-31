@@ -12,7 +12,8 @@ export const scenes = [
     { x: 200, level: 1, hp: 40, atk: 6, xp: 25, sprite: 'crab.png' }
   ],
   npcs: [
-    { x: 380, type: 'shop', sprite: 'shopkeeper.png' }   // friendly NPC
+    { x: 380, type: 'shop', sprite: 'shopkeeper.png' },
+      { x: 450, type: 'gear', sprite: 'shopkeeper.png' } // new gear NPC   // friendly NPC
   ]
 },
 

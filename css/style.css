@@ -1,16 +1,87 @@
-body{background:#1e1e1e;color:#eee;font-family:sans-serif;text-align:center;margin:0;padding:20px}
-canvas{background:#000;border:2px solid #555;}
-
-#inventory{display:flex;justify-content:center;gap:4px}
-.inv-slot{width:32px;height:32px;border:1px solid #888;background:#222}
-.inv-slot img{width:100%;height:100%}
-
-#xp-container{
-  position:absolute;         /* new */
-  left:8px; top:70px;        /* sits just under the profile box */
-  width:160px; height:14px;
-  background:#555;
-  border-radius:3px;
-  overflow:hidden;
+body {
+  background: #1e1e1e;
+  color: #eee;
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
 }
-#xp-bar{height:100%;background:#2196f3;}   /* blue XP fill */
+
+canvas {
+  background: #000;
+  border: 2px solid #555;
+  display: block;
+  margin: 0 auto;
+}
+
+/* --- Game UI Container --- */
+#game-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* --- XP Bar (below canvas) --- */
+#xp-container {
+  width: 200px;
+  height: 14px;
+  background: #555;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 10px auto;
+}
+#xp-bar {
+  height: 100%;
+  background: #2196f3;
+}
+
+/* --- Inventory --- */
+#inventory {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px auto;
+  max-width: 320px;
+}
+.inv-slot {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #888;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inv-slot img {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Equipped Gear --- */
+#equipment {
+  margin-top: 10px;
+}
+#equipment h3 {
+  margin-bottom: 5px;
+}
+#equipment .equipment-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.equipment-slot {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #aaa;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.equipment-slot img {
+  width: 100%;
+  height: 100%;
+}

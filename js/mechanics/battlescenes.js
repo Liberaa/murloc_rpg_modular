@@ -8,6 +8,7 @@
 
 import { push } from './logs.js';
 
+
 export class Battle {
   constructor (player, enemy) {
     this.player   = player;
